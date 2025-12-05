@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ডেটা এক্সপোর্ট টুল</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 10px; }
+        textarea { width: 100%; height: 200px; margin: 10px 0; }
+        .info { background: #e7f3ff; padding: 15px; border-radius: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📊 কুইজ ডেটা এক্সপোর্ট টুল</h2>
+        
+        <div class="info">
+            <strong>📍 বর্তমান লোকেশন:</strong><br>
+            <span id="current-url"></span>
+        </div>
+        
+        <button onclick="exportData()">📤 ডেটা এক্সপোর্ট করুন</button>
+        <button onclick="importData()">📥 ডেটা ইমপোর্ট করুন</button>
+        <button onclick="clearData()">🗑️ ডেটা মুছুন</button>
+        
+        <h3>📋 এক্সপোর্ট করা ডেটা:</h3>
+        <textarea id="export-data" placeholder="এখানে ডেটা দেখাবে..."></textarea>
+        
+        <h3>📥 ইমপোর্ট করার জন্য:</h3>
+        <textarea id="import-data" placeholder="এখানে ডেটা পেস্ট করুন..."></textarea>
+        
+        <div class="info">
+            <strong>📊 বর্তমান পরিসংখ্যান:</strong><br>
+            মোট কুইজ: <span id="total-count">0</span><br>
+            পাস: <span id="pass-count">0</span><br>
+            ফেল: <span id="fail-count">0</span>
+        </div>
+    </div>
+
+    <script>
+        function updateStats() {
+            const results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            document.getElementById('total-count').textContent = results.length;
+            document.getElementById('pass-count').textContent = results.filter(r => r.passed).length;
+            document.getElementById('fail-count').textContent = results.filter(r => !r.passed).length;
+            document.getElementById('current-url').textContent = window.location.href;
+        }
+
+        function exportData() {
+            const data = localStorage.getItem('quizResults') || '[]';
+            document.getElementById('export-data').value = data;
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(data).then(() => {
+                alert('✅ ডেটা ক্লিপবোর্ডে কপি হয়েছে!');
+            });
+        }
+
+        function importData() {
+            const data = document.getElementById('import-data').value.trim();
+            if (!data) {
+                alert('❌ কোনো ডেটা পাওয়া যায়নি!');
+                return;
+            }
+            
+            try {
+                JSON.parse(data); // Validate JSON
+                localStorage.setItem('quizResults', data);
+                alert('✅ ডেটা সফলভাবে ইমপোর্ট হয়েছে!');
+                updateStats();
+            } catch (error) {
+                alert('❌ ভুল ডেটা ফরম্যাট!');
+            }
+        }
+
+        function clearData() {
+            if (confirm('আপনি কি সত্যিই সব ডেটা মুছে ফেলতে চান?')) {
+                localStorage.removeItem('quizResults');
+                alert('✅ সব ডেটা মুছে ফেলা হয়েছে!');
+                updateStats();
+                document.getElementById('export-data').value = '';
+            }
+        }
+
+        // Load stats on page load
+        window.onload = updateStats;
+    </script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>স্মার্ট কুইজ সিস্টেম</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav">
+        <div class="nav-brand">🎓 স্মার্ট কুইজ</div>
+        <button class="nav-toggle" onclick="toggleNav()">☰</button>
+        <div class="nav-menu" id="nav-menu">
+            <a href="#" onclick="goHome()">🏠 হোম</a>
+            <a href="admin.html">📊 অ্যাডমিন</a>
+            <a href="data-export.html">📤 ডেটা</a>
+            <a href="#" onclick="toggleAI()">🤖 AI সহায়ক</a>
+            <div id="nav-student-id" style="display: none; color: #00b894; font-weight: bold; padding: 8px 15px; border-radius: 20px; background: rgba(0,184,148,0.1);">🆔 আইডি: <span id="nav-id-display"></span></div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <header>
+            <h1>🎓 স্মার্ট কুইজ সিস্টেম 🎓</h1>
+            <p>আপনার পছন্দের বিষয়ে কুইজ দিন - ৩০ মার্কের মধ্যে ২০+ পেলে সার্টিফিকেট পাবেন!</p>
+        </header>
+
+        <!-- Topic Selection Section -->
+        <div id="topic-container">
+            <div class="topic-card">
+                <h2>📚 কুইজের বিষয় নির্বাচন করুন</h2>
+                <div class="topic-grid">
+                    <div class="topic-item" onclick="selectTopic('bangladesh')">
+                        <span>🇧🇩</span>
+                        <h3>বাংলাদেশ</h3>
+                    </div>
+                    <div class="topic-item" onclick="selectTopic('science')">
+                        <span>🔬</span>
+                        <h3>বিজ্ঞান</h3>
+                    </div>
+                    <div class="topic-item" onclick="selectTopic('history')">
+                        <span>🏛️</span>
+                        <h3>ইতিহাস</h3>
+                    </div>
+                    <div class="topic-item" onclick="selectTopic('geography')">
+                        <span>🌍</span>
+                        <h3>ভূগোল</h3>
+                    </div>
+                    <div class="topic-item" onclick="selectTopic('literature')">
+                        <span>📖</span>
+                        <h3>সাহিত্য</h3>
+                    </div>
+                    <div class="topic-item" onclick="selectTopic('sports')">
+                        <span>⚽</span>
+                        <h3>খেলাধুলা</h3>
+                    </div>
+                    <div class="topic-item" onclick="selectTopic('technology')">
+                        <span>💻</span>
+                        <h3>প্রযুক্তি</h3>
+                    </div>
+                    <div class="topic-item" onclick="selectTopic('climate')">
+                        <span>🌡️</span>
+                        <h3>জলবায়ু</h3>
+                    </div>
+                    <div class="topic-item" onclick="selectTopic('general')">
+                        <span>🧠</span>
+                        <h3>সাধারণ জ্ঞান</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Details Input Section -->
+        <div id="name-container" style="display: none;">
+            <div class="name-card">
+                <h2>👤 আপনার তথ্য দিন</h2>
+                <p>কুইজ শুরু করার আগে আপনার সব তথ্য দিন</p>
+                <div class="student-form">
+                    <input type="text" id="student-name-input" placeholder="আপনার পূর্ণ নাম লিখুন..." maxlength="50">
+                    <input type="text" id="school-name-input" placeholder="স্কুলের নাম লিখুন..." maxlength="100">
+                    <input type="number" id="student-age-input" placeholder="বয়স" min="5" max="25">
+                    <input type="text" id="student-class-input" placeholder="শ্রেণী (যেমন: ৮ম শ্রেণী)" maxlength="20">
+                    <input type="text" id="principal-name-input" placeholder="প্রধান শিক্ষকের নাম" maxlength="50">
+                    <div class="photo-upload">
+                        <label for="photo-input" class="photo-label">📷 ছবি আপলোড করুন</label>
+                        <input type="file" id="photo-input" accept="image/*" capture="user">
+                        <div id="photo-preview"></div>
+                    </div>
+                    <button onclick="startQuizWithDetails()">কুইজ শুরু করুন</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Section -->
+        <div id="quiz-container" style="display: none;">
+            <div class="quiz-header">
+                <h2 id="quiz-topic-title"></h2>
+                <p id="student-name-display"></p>
+                <div id="question-counter">
+                    প্রশ্ন <span id="current-question">1</span> / <span id="total-questions">10</span>
+                </div>
+            </div>
+
+            
+            <div id="question-card">
+                <div class="timer-container">
+                    <div class="timer-circle">
+                        <span id="timer">5</span>
+                    </div>
+                    <p>সেকেন্ড বাকি</p>
+                </div>
+                <h3 id="question-text"></h3>
+                <div id="options-container"></div>
+            </div>
+        </div>
+
+        <!-- Result Section -->
+        <div id="result-container" style="display: none;">
+            <div id="result-card">
+                <h2 id="result-title"></h2>
+                <p id="score-display"></p>
+                <div id="pass-code-section" style="display: none;">
+                    <div class="pass-code-card">
+                        <h3>🎉 পাস কোড</h3>
+                        <p class="pass-code" id="pass-code"></p>
+                        <p class="pass-code-info">এই কোড দিয়ে AI সহায়ক ব্যবহার করুন</p>
+                    </div>
+                </div>
+                <div id="id-card" style="display: none;">
+                    <div class="id-card-content">
+                        <div class="id-card-header">
+                            <h3>🎓 স্মার্ট কুইজ সিস্টেম 🎓</h3>
+                        </div>
+                        <div class="id-card-body">
+                            <div class="student-photo" id="id-card-photo">📷</div>
+                            <div class="student-info">
+                                <h4 id="id-student-name">নাম</h4>
+                                <p><strong>স্কুল:</strong> <span id="id-school-name"></span></p>
+                                <p><strong>শ্রেণী:</strong> <span id="id-class"></span> | <strong>বয়স:</strong> <span id="id-age"></span></p>
+                                <p><strong>প্রধান শিক্ষক:</strong> <span id="id-principal"></span></p>
+                                <p><strong>কুইজ বিষয়:</strong> <span id="id-topic"></span></p>
+                                <p><strong>স্কোর:</strong> <span id="id-score"></span>/৩০</p>
+                            </div>
+                        </div>
+                        <div class="id-card-footer">
+                            <p>তারিখ: <span id="id-date"></span></p>
+                        </div>
+                        <button onclick="downloadIdCard()" class="download-btn">📥 আইডি কার্ড ডাউনলোড</button>
+                    </div>
+                </div>
+                <button id="restart-btn" onclick="restartQuiz()">নতুন কুইজ শুরু করুন</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Answer Feedback Overlay -->
+    <div id="answer-overlay" class="answer-overlay" style="display: none;">
+        <div class="answer-symbol" id="answer-symbol"></div>
+    </div>
+    
+    <!-- AI Assistant Modal -->
+    <div id="ai-modal" class="ai-modal" style="display: none;">
+        <div class="ai-modal-content">
+            <div class="ai-header">
+                <h3>🤖 AI সহায়ক</h3>
+                <button class="ai-close" onclick="toggleAI()">&times;</button>
+            </div>
+            <div class="ai-chat" id="ai-chat">
+                <div class="ai-message">
+                    <strong>AI:</strong> সালাম! AI সহায়ক ব্যবহার করতে আপনার পাস কোড দিন।
+                </div>
+            </div>
+            <div id="code-verification" class="code-input-container">
+                <input type="text" id="code-input" placeholder="পাস কোড দিন..." onkeypress="handleCodeEnter(event)">
+                <button onclick="verifyCode()">যাচাই</button>
+            </div>
+            <div class="ai-input-container">
+                <input type="text" id="ai-input" placeholder="আপনার প্রশ্ন লিখুন..." onkeypress="handleAIEnter(event)">
+                <button onclick="askAI()">পাঠান</button>
+            </div>
+        </div>
+    </div>
+    
+ <script src="script.js"></script>
+</body>
+</html>

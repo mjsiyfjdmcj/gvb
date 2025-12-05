@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>কুইজ অ্যাডমিন প্যানেল</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+        
+        /* Mobile Navigation */
+        .mobile-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .nav-brand {
+            font-weight: bold;
+            color: #2d3436;
+            font-size: 1.2rem;
+        }
+        
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #2d3436;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-menu a {
+            text-decoration: none;
+            color: #2d3436;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .nav-menu a:hover {
+            background: #00b894;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 20px 15px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #00b894;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00b894;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .stat-label {
+            color: #2d3436;
+            margin-top: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .results-section {
+            padding: 20px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-export {
+            background: #00b894;
+            color: white;
+        }
+        
+        .btn-clear {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+        
+        .results-table th,
+        .results-table td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.9rem;
+        }
+        
+        .results-table th {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .pass {
+            color: #00b894;
+            font-weight: bold;
+            background: #d1f2eb;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        
+        .fail {
+            color: #e74c3c;
+            font-weight: bold;
+            background: #fadbd8;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        
+        .results-table tbody tr:hover {
+            background: #f1f9f7;
+            transform: scale(1.02);
+            transition: all 0.3s ease;
+        }
+        
+        .no-data {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 30px;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            
+            .nav-toggle {
+                display: block;
+            }
+            
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 15px;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                margin-top: 10px;
+            }
+            
+            .nav-menu.active {
+                display: flex;
+            }
+            
+            .mobile-nav {
+                position: relative;
+            }
+            
+            .header {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                padding: 15px;
+            }
+            
+            .stat-card {
+                padding: 15px 10px;
+            }
+            
+            .stat-number {
+                font-size: 1.5rem;
+            }
+            
+            .stat-label {
+                font-size: 0.8rem;
+            }
+            
+            .results-section {
+                padding: 15px;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .section-header h2 {
+                font-size: 1.3rem;
+                margin-bottom: 10px;
+            }
+            
+            .action-buttons {
+                justify-content: center;
+            }
+            
+            .btn {
+                flex: 1;
+                min-width: 120px;
+            }
+            
+            .results-table th,
+            .results-table td {
+                padding: 8px 4px;
+                font-size: 0.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-table {
+                min-width: 600px;
+            }
+            
+            .results-table th,
+            .results-table td {
+                padding: 6px 3px;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav">
+        <div class="nav-brand">📊 অ্যাডমিন প্যানেল</div>
+        <button class="nav-toggle" onclick="toggleNav()">☰</button>
+        <div class="nav-menu" id="nav-menu">
+            <a href="index.html">🏠 হোম</a>
+            <a href="#" onclick="location.reload()">🔄 রিফ্রেশ</a>
+            <a href="data-export.html">📤 ডেটা</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="header">
+            <h1>📊 কুইজ অ্যাডমিন প্যানেল 📊</h1>
+            <p>সকল পরীক্ষার্থীর ফলাফল এবং পরিসংখ্যান</p>
+            <div style="margin-top: 15px; font-size: 0.9rem; opacity: 0.8;">
+                🔄 রিয়েল-টাইম আপডেট চালু | শেষ আপডেট: <span id="last-update">লোড হচ্ছে...</span>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="total-attempts">0</div>
+                <div class="stat-label">📈 মোট অংশগ্রহণকারী</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="passed-count">0</div>
+                <div class="stat-label">✅ পাস করেছে</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="failed-count">0</div>
+                <div class="stat-label">❌ ফেল করেছে</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pass-rate">0%</div>
+                <div class="stat-label">🏆 পাসের হার</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="average-score">0</div>
+                <div class="stat-label">📊 গড় স্কোর</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="highest-score">0</div>
+                <div class="stat-label">🎆 সর্বোচ্চ স্কোর</div>
+            </div>
+        </div>
+        
+        <div class="results-section">
+            <div class="section-header">
+                <h2>📄 সকল ফলাফল</h2>
+                <div class="action-buttons">
+                    <button onclick="exportData()" class="btn btn-export">
+                        📥 ডেটা এক্সপোর্ট
+                    </button>
+                    <button onclick="clearAllData()" class="btn btn-clear">
+                        🗑️ সব ডেটা মুছুন
+                    </button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>👤 নাম</th>
+                        <th>🏫 স্কুল</th>
+                        <th>🎂 বয়স</th>
+                        <th>📖 শ্রেণী</th>
+                        <th>👨‍🏫 প্রধান শিক্ষক</th>
+                        <th>📚 বিষয়</th>
+                        <th>🎯 স্কোর</th>
+                        <th>🏅 ফলাফল</th>
+                        <th>⏰ সময়</th>
+                    </tr>
+                </thead>
+                <tbody id="results-tbody">
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="data-persistence.js"></script>
+    <script>
+        function loadStatistics() {
+            const stats = window.quizDataManager.getStats();
+            
+            document.getElementById('total-attempts').textContent = stats.total;
+            document.getElementById('passed-count').textContent = stats.passed;
+            document.getElementById('failed-count').textContent = stats.failed;
+            document.getElementById('pass-rate').textContent = stats.passRate + '%';
+            document.getElementById('average-score').textContent = stats.avgScore;
+            document.getElementById('highest-score').textContent = stats.maxScore;
+            
+            document.getElementById('last-update').textContent = new Date().toLocaleTimeString('bn-BD');
+        }
+        
+        function loadResults() {
+            const results = window.quizDataManager.getResults();
+            const tbody = document.getElementById('results-tbody');
+            tbody.innerHTML = '';
+            
+            if (results.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="9" class="no-data">এখনো কোনো কুইজ সম্পন্ন হয়নি</td>';
+                tbody.appendChild(row);
+                return;
+            }
+            
+            results.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            results.forEach((result, index) => {
+                const row = document.createElement('tr');
+                const topicNames = {
+                    bangladesh: 'বাংলাদেশ',
+                    science: 'বিজ্ঞান',
+                    history: 'ইতিহাস',
+                    geography: 'ভূগোল',
+                    literature: 'সাহিত্য',
+                    sports: 'খেলাধুলা',
+                    technology: 'প্রযুক্তি',
+                    general: 'সাধারণ জ্ঞান'
+                };
+                
+                row.innerHTML = `
+                    <td>${result.name || 'পরীক্ষার্থী #' + (index + 1)}</td>
+                    <td>${result.school || 'N/A'}</td>
+                    <td>${result.age || 'N/A'} বছর</td>
+                    <td>${result.class || 'N/A'}</td>
+                    <td>${result.principal || 'N/A'}</td>
+                    <td>${topicNames[result.topic] || 'অজানা'}</td>
+                    <td>${result.score}/৩০</td>
+                    <td class="${result.passed ? 'pass' : 'fail'}">
+                        ${result.passed ? 'পাস ✅' : 'ফেল ❌'}
+                    </td>
+                    <td>${new Date(result.timestamp).toLocaleString('bn-BD')}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function clearAllData() {
+            if (confirm('আপনি কি সত্যিই সব ডেটা মুছে ফেলতে চান?')) {
+                window.quizDataManager.clearAll();
+                loadStatistics();
+                loadResults();
+            }
+        }
+        
+        function exportData() {
+            window.quizDataManager.exportData();
+        }
+        
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            loadStatistics();
+            loadResults();
+        }, 30000);
+        
+        // Listen for data updates
+        window.addEventListener('quizDataUpdated', () => {
+            loadStatistics();
+            loadResults();
+        });
+        
+        // Listen for localStorage changes from other tabs
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'quizResults') {
+                loadStatistics();
+                loadResults();
+            }
+        });
+        
+        // Mobile navigation toggle
+        function toggleNav() {
+            const navMenu = document.getElementById('nav-menu');
+            navMenu.classList.toggle('active');
+        }
+        
+        // Close mobile nav when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.querySelector('.mobile-nav');
+            const navMenu = document.getElementById('nav-menu');
+            
+            if (!nav.contains(event.target) && navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+            }
+        });
+        
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStatistics();
+            loadResults();
+        });
+    </script>
+</body>
+</html>
